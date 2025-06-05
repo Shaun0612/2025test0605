@@ -284,6 +284,21 @@ function draw() {
   // 更新上一幀狀態
   leftWasTouching = leftTouch;
   rightWasTouching = rightTouch;
+
+  fill(255, 150);
+  rectMode(CENTER);
+  rect(width / 2, height - 67, 600, 130, 20);
+  fill(0);
+  textSize(18);
+  textAlign(CENTER, CENTER);
+  text(
+    "玩法說明：（請注意自己設備音量）\n" +
+    "1. 左/右手食指與大拇指碰觸，播放該手蓋亞記憶體的音效。\n" +
+    "2. 左手食指碰右手大拇指切換左手蓋亞記憶體，\n"+
+    "右手食指碰左手大拇指切換右手蓋亞記憶體。\n" +
+    "3. 左右手食指互碰，依蓋亞記憶體組合播放變身音樂。",
+    width / 2, height - 65
+  );
 }
 
 let leftColorIndex = 0;
