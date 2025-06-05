@@ -6,6 +6,10 @@ let handPose;
 let hands = [];
 let cycloneSound, jokerSound, heatSound, lunaSound, metalSound, triggerSound, changeSound; // 新增變數
 
+// 組合音樂變數
+let soundCJ, soundCM, soundCT, soundHJ, soundHM, soundHT, soundLJ, soundLM, soundLT;
+let lastComboTouch = false;
+
 // 顏色陣列與索引
 const leftColors = [
   [0, 255, 0],   // 綠色
@@ -38,6 +42,17 @@ function preload() {
   leftColorSounds = [cycloneSound, heatSound, lunaSound];
   // 右手顏色對應音樂
   rightColorSounds = [jokerSound, metalSound, triggerSound];
+
+  // 載入音樂
+  soundCJ = loadSound('music/CJ.mp3');
+  soundCM = loadSound('music/CM.mp3');
+  soundCT = loadSound('music/CT.mp3');
+  soundHJ = loadSound('music/HJ.mp3');
+  soundHM = loadSound('music/HM.mp3');
+  soundHT = loadSound('music/HT.mp3');
+  soundLJ = loadSound('music/LJ.mp3');
+  soundLM = loadSound('music/LM.mp3');
+  soundLT = loadSound('music/LT.mp3');
 }
 
 function mousePressed() {
@@ -104,13 +119,13 @@ function draw() {
   let leftCrossTouch = false;
   if (leftIndex && rightThumb) {
     let d = dist(leftIndex.x, leftIndex.y, rightThumb.x, rightThumb.y);
-    if (d < 40) leftCrossTouch = true;
+    if (d < 30) leftCrossTouch = true;
   }
   // 右手食指碰左手大拇指
   let rightCrossTouch = false;
   if (rightIndex && leftThumb) {
     let d = dist(rightIndex.x, rightIndex.y, leftThumb.x, leftThumb.y);
-    if (d < 40) rightCrossTouch = true;
+    if (d < 30) rightCrossTouch = true;
   }
 
   // 只在剛觸碰時且冷卻時間到時切換顏色並播放change音樂
@@ -118,7 +133,6 @@ function draw() {
   if (leftCrossTouch && !lastLeftCrossTouch && now - lastLeftSwitchTime > 2000) {
     leftColorIndex = (leftColorIndex + 1) % leftColors.length;
     lastLeftSwitchTime = now;
-    // 切換顏色時播放change音樂（可重疊播放）
     if (changeSound) {
       changeSound.play();
     }
@@ -126,7 +140,6 @@ function draw() {
   if (rightCrossTouch && !lastRightCrossTouch && now - lastRightSwitchTime > 2000) {
     rightColorIndex = (rightColorIndex + 1) % rightColors.length;
     lastRightSwitchTime = now;
-    // 切換顏色時播放change音樂（可重疊播放）
     if (changeSound) {
       changeSound.play();
     }
@@ -142,7 +155,7 @@ function draw() {
         let kp8 = hand.keypoints[8];
         let d = dist(kp4.x, kp4.y, kp8.x, kp8.y);
 
-        if (d < 40) {
+        if (d < 30) {
           if (hand.handedness == "Left") {
             leftTouch = true;
           } else {
@@ -225,6 +238,49 @@ function draw() {
     }
   }
 
+  // 雙手食指同時觸碰判斷
+  let leftIndex8 = null, rightIndex8 = null;
+  if (hands.length > 1) {
+    for (let hand of hands) {
+      if (hand.confidence > 0.1) {
+        if (hand.handedness == "Left") leftIndex8 = hand.keypoints[8];
+        if (hand.handedness == "Right") rightIndex8 = hand.keypoints[8];
+      }
+    }
+  }
+  let comboTouch = false;
+  if (leftIndex8 && rightIndex8) {
+    let d = dist(leftIndex8.x, leftIndex8.y, rightIndex8.x, rightIndex8.y);
+    if (d < 30) comboTouch = true;
+  }
+
+  // 只在剛觸碰時且冷卻時間到時播放一次
+  // 這裡不要再 let now = millis(); 了，直接用 now
+  if (comboTouch && !lastComboTouch && now - lastComboPlayTime > 8000) {
+    lastComboPlayTime = now;
+    // 根據顏色組合播放對應音樂
+    if (leftColorIndex === 0 && rightColorIndex === 0) {
+      if (soundCJ) soundCJ.play();
+    } else if (leftColorIndex === 0 && rightColorIndex === 1) {
+      if (soundCM) soundCM.play();
+    } else if (leftColorIndex === 0 && rightColorIndex === 2) {
+      if (soundCT) soundCT.play();
+    } else if (leftColorIndex === 1 && rightColorIndex === 0) {
+      if (soundHJ) soundHJ.play();
+    } else if (leftColorIndex === 1 && rightColorIndex === 1) {
+      if (soundHM) soundHM.play();
+    } else if (leftColorIndex === 1 && rightColorIndex === 2) {
+      if (soundHT) soundHT.play();
+    } else if (leftColorIndex === 2 && rightColorIndex === 0) {
+      if (soundLJ) soundLJ.play();
+    } else if (leftColorIndex === 2 && rightColorIndex === 1) {
+      if (soundLM) soundLM.play();
+    } else if (leftColorIndex === 2 && rightColorIndex === 2) {
+      if (soundLT) soundLT.play();
+    }
+  }
+  lastComboTouch = comboTouch;
+
   // 更新上一幀狀態
   leftWasTouching = leftTouch;
   rightWasTouching = rightTouch;
@@ -238,3 +294,4 @@ let lastLeftCrossTouch = false;
 let lastRightCrossTouch = false;
 let leftWasTouching = false;
 let rightWasTouching = false;
+let lastComboPlayTime = 0;
