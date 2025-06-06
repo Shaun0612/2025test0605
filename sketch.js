@@ -293,12 +293,46 @@ function draw() {
   textAlign(CENTER, CENTER);
   text(
     "玩法說明：（請注意自己設備音量）\n" +
-    "1. 左/右手食指與大拇指碰觸，播放該手蓋亞記憶體的音效。\n" +
+    "1. 左/右手食指與大拇指碰觸，展示該手蓋亞記憶體的名字和音效。\n" +
     "2. 左手食指碰右手大拇指切換左手蓋亞記憶體，\n"+
     "右手食指碰左手大拇指切換右手蓋亞記憶體。\n" +
     "3. 左右手食指互碰，依蓋亞記憶體組合播放變身音樂。",
     width / 2, height - 65
   );
+
+  // 左手提示
+  if (leftTouch) {
+    let leftText = "";
+    if (leftColorIndex === 0) leftText = "CYCLONE";
+    else if (leftColorIndex === 1) leftText = "HEAT";
+    else if (leftColorIndex === 2) leftText = "LUNA";
+    fill(0, 200);
+    rectMode(CORNER);
+    rect(10, 10, 160, 40, 10);
+    fill(0, 255, 0);
+    if (leftColorIndex === 1) fill(255, 0, 0);
+    if (leftColorIndex === 2) fill(255, 255, 0);
+    textSize(28);
+    textAlign(LEFT, TOP);
+    text(leftText, 20, 18);
+  }
+
+  // 右手提示
+  if (rightTouch) {
+    let rightText = "";
+    if (rightColorIndex === 0) rightText = "JOKER";
+    else if (rightColorIndex === 1) rightText = "METAL";
+    else if (rightColorIndex === 2) rightText = "TRIGGER";
+    fill(0, 200);
+    rectMode(CORNER);
+    rect(width - 170, 10, 160, 40, 10);
+    if (rightColorIndex === 0) fill(200, 0, 200);
+    if (rightColorIndex === 1) fill(223, 223, 223);
+    if (rightColorIndex === 2) fill(0, 0, 255);
+    textSize(28);
+    textAlign(RIGHT, TOP);
+    text(rightText, width - 20, 18);
+  }
 }
 
 let leftColorIndex = 0;
