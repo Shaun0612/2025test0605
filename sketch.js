@@ -333,6 +333,14 @@ function draw() {
     textAlign(RIGHT, TOP);
     text(rightText, width - 20, 18);
   }
+
+  // 中央半透明TKUET
+  textAlign(CENTER, CENTER);
+  textSize(80);
+  stroke(0, 255, 0, 50);      // 綠色外框
+  strokeWeight(6);
+  fill(200, 0, 200, 50); // 紫色填充，半透明
+  text("TKUET", width / 2, height / 2);
 }
 
 let leftColorIndex = 0;
